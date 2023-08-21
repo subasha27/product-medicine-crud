@@ -46,13 +46,76 @@ const addMedicines = async(req,res)=>{
     })
 
     await medDetails.save();
-    return res.status(200).send({message:"Medicine added succesfully"})
+    return res.status(200).send(` Medicine Added Successfully \n Created Id = ${medDetails._id},`) 
 
     }catch(err){
         console.error(err);
         return res.status(500).send({message:"Server Error..."})
     }
 }
+
+
+const getOne = async(req,res)=>{
+    try{
+        const productName = req.productName;
+        const findName = await User.findOne(productName);
+        if (!findName){
+            return res.status(404).send({message:"Product Not Found"})
+        }
+        res.json({data: findName});
+
+    }catch(err){
+        console.error(err);
+        return res.status(500).send({message:"Server Error..."});
+    }
+}
+
+const updateMed = async(req,res)=>{
+    try{
+        const findId = req.params.id;
+        const updateDetails = req.body;
+        const validateUpDetails = authSchema.validate(updateDetails);
+        if (validateUpDetails.error) {
+            return res.status(400).json({ message: validateUpDetails.error.details[0].message });
+        }
+
+        const updateAllDetails = await User.findByIdAndUpdate(findId,{$set:updateDetails},{new:true});
+        if (!updateAllDetails){
+            return res.status(404).json({message:"Product Not Found"})
+        }
+        res.json({message:"Updated", data : updateAllDetails})
+
+    }catch(err){
+        console.error(err);
+        return res.status(500).send({message:"Server Error..."});
+    }
+}
+
+
+const delMed = async(req,res)=>{
+    try{
+        const removeMedId = req.params.id;
+        const deleteMedicine = await User.findByIdAndDelete(removeMedId);
+        if (!deleteMedicine){
+            return res.status(404).json({message:"Med Not Found"})
+        }
+        res.json({message:"Deleted", data : deleteMedicine})
+    }catch(err){
+        console.error(err);
+        return res.status(500).send({message:"Server Error..."});
+    }
+}
+
+const getAll = async(req,res)=>{
+    try{
+        const findMed = await User.find().sort({_id : 1});
+        res.json({data: findMed});
+    }catch(err){
+        console.error(err);
+        return res.status(500).send({message:"Server Error..."});
+    }
+}
+
 
 
 const downloadDetails = async(req,res)=>{
@@ -140,5 +203,9 @@ const uploadDetails = async(req,res)=>{
 module.exports={
     addMedicines,
     downloadDetails,
-    uploadDetails
+    uploadDetails,
+    getOne,
+    updateMed,
+    delMed,
+    getAll
 }
