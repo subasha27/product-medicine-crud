@@ -12,9 +12,9 @@ const storage = multer.diskStorage({
 
 const excelFileFilter = (req, file, cb) => {
     if (file.mimetype === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
-        cb(null, true); // Accept the file
+        cb(null, true); 
     } else {
-        cb(new Error("Only Excel files are allowed"), false); // Reject the file
+        cb(new Error("Only Excel files are allowed"), false); 
     }
 };
 
@@ -22,9 +22,9 @@ const upload = multer({
     storage:storage,
     fileFilter: excelFileFilter,
  });
-
+//const uploadSingleFile = upload.single('user_data'); <= we can use this for single file
 const manageFile = upload.fields([
-    { name: 'user_data', maxCount: 1 } // Changed field name to 'user_data'
+    { name: 'user_data', maxCount: 1 } // for multiple file input
 ]);
 
 module.exports = { manageFile };
